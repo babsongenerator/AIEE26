@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Our Class</title>
+<style>
+  :root {
+    --bg: #f4f7f5;
+    --card: #ffffff;
+    --ink: #14201b;
+    --soft: #55625b;
+    --line: #dce4df;
+    --green: #006643;
+    --team1: #006643;
+    --team2: #005171;
+    --team3: #a87a12;
+    --team4: #7a3e9d;
+    --team5: #b4441f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 17px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  header { background: var(--green); color: #fff; padding: 20px 24px; }
+  header h1 { margin: 0; font-size: 28px; }
+  header p { margin: 4px 0 0; opacity: 0.9; }
+  main { padding: 24px; max-width: 1200px; margin: 0 auto; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 16px; }
+  .student {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+  }
+  .student:hover, .student:focus-visible { border-color: var(--green); outline: 2px solid var(--green); }
+  .student img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; display: block; }
+  .student .name { font-weight: 700; margin-top: 8px; font-size: 18px; }
+  .student .full { color: var(--soft); font-size: 14px; }
+  .team { display: inline-block; margin-top: 6px; padding: 1px 10px; border-radius: 999px; color: #fff; font-size: 13px; }
+  dialog { border: 0; border-radius: 12px; padding: 0; max-width: 560px; width: calc(100% - 32px); }
+  dialog::backdrop { background: rgba(20, 32, 27, 0.5); }
+  .card { display: grid; grid-template-columns: 160px 1fr; gap: 20px; padding: 24px; }
+  .card img { width: 160px; height: 160px; object-fit: cover; border-radius: 10px; }
+  .card h2 { margin: 0; font-size: 24px; }
+  .card .say { color: var(--soft); margin: 2px 0 10px; }
+  .card dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; font-size: 15px; }
+  .card dt { color: var(--soft); }
+  .card dd { margin: 0; }
+  .card .intro { grid-column: 1 / -1; margin: 0; }
+  .close { margin: 0 24px 20px; padding: 8px 18px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); font: inherit; cursor: pointer; }
+  @media (max-width: 520px) { .card { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="course"></h1>
+  <p>These 20 students are invented. Their portraits were made with AI, and none of them is a real person.</p>
+</header>
+<main>
+  <div class="grid" id="grid"></div>
+</main>
+
+<dialog id="detail">
+  <div class="card" id="detail-card"></div>
+  <button class="close" id="close">Close</button>
+</dialog>
+
+<!-- The class list lives in students.js, so this page opens with a double-click and needs no server. -->
+<script src="students.js"></script>
+<script>
+  const TEAM_COLORS = { "Team 1": "var(--team1)", "Team 2": "var(--team2)", "Team 3": "var(--team3)",
+                        "Team 4": "var(--team4)", "Team 5": "var(--team5)" };
+
+  document.getElementById("course").textContent = CLASS.course.code + ": " + CLASS.course.name;
+
+  const grid = document.getElementById("grid");
+  for (const s of CLASS.students) {
+    const b = document.createElement("button");
+    b.className = "student";
+    b.innerHTML =
+      '<img alt="">' +
+      '<div class="name"></div><div class="full"></div>' +
+      '<span class="team"></span>';
+    b.querySelector("img").src = s.photo;
+    b.querySelector("img").alt = "Portrait of " + s.name;
+    b.querySelector(".name").textContent = s.short_name;
+    b.querySelector(".full").textContent = s.name;
+    b.querySelector(".team").textContent = s.team;
+    b.querySelector(".team").style.background = TEAM_COLORS[s.team] || "var(--soft)";
+    b.addEventListener("click", () => showStudent(s));
+    grid.appendChild(b);
+  }
+
+  const dialog = document.getElementById("detail");
+  document.getElementById("close").addEventListener("click", () => dialog.close());
+
+  function showStudent(s) {
+    const card = document.getElementById("detail-card");
+    card.innerHTML = "";
+    const img = document.createElement("img");
+    img.src = s.photo;
+    img.alt = "Portrait of " + s.name;
+    const info = document.createElement("div");
+    const rows = [
+      ["Pronouns", s.pronouns],
+      ["Hometown", s.hometown],
+      ["Year", s.year],
+      ["Concentration", s.concentration],
+      ["Team", s.team],
+      ["Interests", s.interests.join(", ")],
+      ["Fun fact", s.fun_fact],
+    ];
+    info.innerHTML = "<h2></h2><p class='say'></p><dl></dl>";
+    info.querySelector("h2").textContent = s.name;
+    info.querySelector(".say").textContent = "Say it: " + s.pronunciation;
+    const dl = info.querySelector("dl");
+    for (const [label, value] of rows) {
+      const dt = document.createElement("dt");
+      dt.textContent = label;
+      const dd = document.createElement("dd");
+      dd.textContent = value;
+      dl.append(dt, dd);
+    }
+    const intro = document.createElement("p");
+    intro.className = "intro";
+    intro.textContent = s.intro;
+    card.append(img, info, intro);
+    dialog.showModal();
+  }
+</script>
+</body>
+</html>

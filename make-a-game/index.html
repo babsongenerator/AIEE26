@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Launch Day</title>
+<!--
+  This is Launch Day, the one-screen edition. Open this file by double-clicking it. It needs no
+  server, no install, and no internet.
+
+  The case lives in the SCENARIO block just below. To make the game about a case you
+  teach, change only that block. Everything after it is the game itself.
+-->
+<script>
+// ===================================================================== THE CASE
+const SCENARIO = {
+  name: "Campus Food Delivery",
+  market: "A mid-size university has 12,000 students and 1,500 faculty and staff. People order food from local restaurants to dorms, the library, and offices. Every team runs a delivery startup in this same market.",
+  unit: "order",
+  units: "orders",
+  startingCash: 100000,
+  roundBudget: 30000,   // what each team can split between product and marketing each round
+  budgetStep: 5000,
+  fixedCostPerRound: 6000,
+  rounds: 3,
+
+  // Three prices. A team picks one each round.
+  tiers: {
+    low:     { label: "Low",     price: 4,  unitCost: 4.5,  note: "A $4 fee per order. Each order costs $4.50 to deliver." },
+    mid:     { label: "Mid",     price: 7,  unitCost: 4.75, note: "A $7 fee per order. Each order costs $4.75 to deliver." },
+    premium: { label: "Premium", price: 10, unitCost: 6.5,  note: "A $10 fee per order. Each order costs $6.50 to deliver." },
+  },
+
+  // Who buys. Shares add up to 1. Appeal says how much each group likes each price.
+  segments: [
+    { name: "Students on a budget", share: 0.55, appeal: { low: 1.6, mid: 0.9,  premium: 0.25 }, qualityWeight: 0.5 },
+    { name: "Students in a hurry",  share: 0.30, appeal: { low: 1.0, mid: 1.15, premium: 0.75 }, qualityWeight: 1.2 },
+    { name: "Faculty and staff",    share: 0.15, appeal: { low: 0.6, mid: 1.0,  premium: 1.4  }, qualityWeight: 1.5 },
+  ],
+
+  // The score: a weighted share of the best team on each measure.
+  score: { customers: 0.35, revenue: 0.35, cash: 0.30 },
+
+  // One news event per round, picked at random. demand and cost multiply the round's numbers.
+  shocks: [
+    { headline: "Dining hall cuts late-night hours", detail: "The main dining hall now closes at 9 PM, so late-night orders jump.", demand: 1.15, cost: 1.0, tiers: ["low", "mid"] },
+    { headline: "Snowstorm hits campus", detail: "Drivers move slowly in the snow, so every delivery costs more.", demand: 1.1, cost: 1.1, tiers: ["low", "mid", "premium"] },
+    { headline: "Spring break empties the dorms", detail: "Half the students leave town for a week, so orders fall for everyone.", demand: 0.85, cost: 1.0, tiers: ["low", "mid", "premium"] },
+    { headline: "Gas prices rise", detail: "Fuel costs go up, so each delivery costs more to make.", demand: 1.0, cost: 1.1, tiers: ["low", "mid", "premium"] },
+    { headline: "Big donor funds a new faculty center", detail: "Catered meetings in the new building raise demand for reliable delivery.", demand: 1.12, cost: 1.0, tiers: ["premium"] },
+    { headline: "Campus newspaper reviews delivery apps", detail: "Students read the review and try new apps, so demand rises a little.", demand: 1.05, cost: 1.0, tiers: ["low", "mid", "premium"] },
+  ],
+
+  // What a customer might say, by price.
+  quotes: {
+    low: ["The fee is so low that I order every night during finals.", "My food was cold, but I paid almost nothing for it.", "I tell my whole floor about this app because it costs so little."],
+    mid: ["The food shows up hot and the price feels fair.", "I use this app between classes because it is quick.", "It costs a bit more, and I am fine with that."],
+    premium: ["I order lunch for my department meetings here every week.", "The driver always arrives on time, so I pay the higher fee.", "It is expensive, so I only use it for special occasions."],
+  },
+
+  // Practice teams fill the market when the room is small.
+  practiceNames: ["Dorm Dash", "Quad Eats", "Late Night Bites", "Library Lunch", "Hot Box", "Campus Courier"],
+  practiceMoves: [
+    "Partner with the campus dining hall for late-night orders",
+    "Give free delivery on the first order for every first-year student",
+    "Offer a monthly pass for unlimited deliveries",
+    "Deliver catered lunches to faculty meetings",
+    "Put lockers in the library for contactless pickup",
+    "Launch a drone delivery pilot on the quad",
+  ],
+
+  // The market model. Change these only if you want the market to behave differently.
+  model: { demandPerTeam: 9000, outsideOption: 1.0, qualityGain: 0.6, awarenessBase: 0.4, awarenessGain: 0.6, brandCarry: 0.6, spendScale: 10000 },
+};
+// ============================================================ END OF THE CASE
+</script>
+<style>
+:root { --bg: #0b2219; --panel: #12352a; --line: #2d5a49; --ink: #ffffff; --soft: #b9cdc4; --gold: #ffc93c; --green: #4fd39b; --red: #ff8a7a; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 18px/1.45 Arial, Helvetica, sans-serif; }
+header { display: flex; align-items: center; gap: 16px; padding: 18px 28px; border-bottom: 1px solid var(--line); }
+header .brand { font-weight: 800; letter-spacing: .14em; font-size: 20px; }
+header .brand b { color: var(--gold); }
+header .case { color: var(--soft); }
+header .pill { margin-left: auto; background: var(--gold); color: #1a1a1a; font-weight: 700; border-radius: 999px; padding: 4px 14px; }
+main { padding: 24px 28px 60px; max-width: 1400px; margin: 0 auto; }
+h1 { font-size: 44px; margin: 6px 0 10px; }
+h2 { font-size: 26px; margin: 28px 0 12px; }
+p.lead { color: var(--soft); font-size: 20px; max-width: 900px; }
+button { font: inherit; font-weight: 700; border-radius: 10px; border: 2px solid var(--gold); background: transparent; color: var(--ink); padding: 8px 16px; cursor: pointer; }
+button.go { background: var(--gold); color: #1a1a1a; font-size: 22px; padding: 12px 26px; }
+button.on { background: var(--gold); color: #1a1a1a; }
+button.small { padding: 4px 10px; font-size: 15px; }
+button:disabled { opacity: .4; cursor: default; }
+input, select { font: inherit; background: #0e2a20; color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+input[type=text] { width: 100%; }
+.tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 14px 0; }
+.tier { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; }
+.tier b { font-size: 26px; color: var(--gold); }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; color: var(--soft); font-size: 14px; letter-spacing: .08em; text-transform: uppercase; padding: 8px; border-bottom: 1px solid var(--line); }
+td { padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+td.r, th.r { text-align: right; }
+.seg { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+.cash.neg { color: var(--red); }
+.news { background: var(--gold); color: #1a1a1a; border-radius: 12px; padding: 14px 20px; margin: 10px 0 18px; }
+.news b { font-size: 24px; display: block; }
+.verdict { display: inline-block; border-radius: 6px; padding: 1px 8px; font-weight: 700; font-size: 15px; }
+.verdict.pos { background: var(--green); color: #0b2219; } .verdict.neg { background: var(--red); color: #0b2219; } .verdict.zero { background: var(--line); }
+.quotes { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.quote { background: #fff; color: #14201b; border-radius: 12px; padding: 14px 16px; font-size: 19px; }
+.quote small { display: block; color: #55625b; margin-top: 6px; font-size: 14px; }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin: 18px 0; }
+.muted { color: var(--soft); }
+.winner { font-size: 64px; color: var(--gold); font-weight: 800; margin: 10px 0; }
+.bar { height: 10px; background: var(--green); border-radius: 5px; display: inline-block; vertical-align: middle; margin-right: 8px; }
+</style>
+</head>
+<body>
+<header><div class="brand">LAUNCH <b>DAY</b></div><div class="case" id="caseName"></div><div class="pill" id="roundPill"></div></header>
+<main id="app"></main>
+<script>
+// ============================================================ THE MARKET MODEL
+// The same math as the full Launch Day game. Quality grows with product spending,
+// awareness with marketing, and each customer group splits its demand by how much it
+// likes each price. The bold-move score and the news event adjust the result.
+const TIERS = ["low", "mid", "premium"];
+const clamp = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
+const qualityOf = (m, cum) => 1 + m.qualityGain * Math.sqrt(Math.max(0, cum) / m.spendScale);
+const awarenessOf = (m, brand) => m.awarenessBase + m.awarenessGain * Math.sqrt(Math.max(0, brand) / m.spendScale);
+
+function resolveMarket(s, plays, shock) {
+  const m = s.model, n = Math.max(plays.length, 1);
+  const prepared = plays.map((p) => {
+    const cumProduct = p.cumProduct + p.product;
+    const brand = m.brandCarry * p.brand + p.marketing;
+    return { ...p, cumProduct, brand, quality: qualityOf(m, cumProduct), awareness: awarenessOf(m, brand) };
+  });
+  const customers = Object.fromEntries(prepared.map((p) => [p.id, 0]));
+  for (const seg of s.segments) {
+    const pool = m.demandPerTeam * n * seg.share;
+    const utils = prepared.map((p) => (seg.appeal[p.tier] || 0) * Math.pow(p.quality, seg.qualityWeight) * p.awareness);
+    const total = utils.reduce((a, b) => a + b, 0) + m.outsideOption * n;
+    prepared.forEach((p, i) => { customers[p.id] += (pool * utils[i]) / total; });
+  }
+  const out = {};
+  for (const p of prepared) {
+    const tier = s.tiers[p.tier];
+    let c = customers[p.id] * (1 + p.boldScore);
+    let unitCost = tier.unitCost;
+    if (shock && shock.tiers.includes(p.tier)) { c *= shock.demand; unitCost *= shock.cost; }
+    c = Math.round(c);
+    const revenue = Math.round(c * tier.price);
+    const variableCost = Math.round(c * unitCost);
+    const profit = revenue - variableCost - s.fixedCostPerRound - p.product - p.marketing;
+    out[p.id] = { customers: c, revenue, profit, cashEnd: p.cash + profit, cumProduct: p.cumProduct, brand: p.brand };
+  }
+  return out;
+}
+
+function scoreTeams(s, teams) {
+  const w = s.score;
+  const maxC = Math.max(1, ...teams.map((t) => t.totalCustomers));
+  const maxR = Math.max(1, ...teams.map((t) => t.totalRevenue));
+  const maxK = Math.max(1, ...teams.map((t) => Math.max(0, t.cash)));
+  for (const t of teams) {
+    t.score = Math.round(1000 * (w.customers * t.totalCustomers / maxC + w.revenue * t.totalRevenue / maxR + w.cash * Math.max(0, t.cash) / maxK));
+  }
+}
+
+// ==================================================================== THE GAME
+// The instructor scores each bold move by how well it fits the market.
+const BOLD = [
+  { value: -0.1, label: "Poor fit" },
+  { value: 0, label: "No effect" },
+  { value: 0.1, label: "Good fit" },
+  { value: 0.2, label: "Great fit" },
+];
+const KEY = "launchday-" + SCENARIO.name;
+const S = SCENARIO;
+let state = load() || fresh();
+
+function fresh() {
+  return { phase: "setup", round: 0, teams: [], moves: {}, shocksUsed: [], last: null };
+}
+function load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch (e) { return null; } }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* the game still works without saving */ } }
+const money = (n) => (n < 0 ? "-$" : "$") + (Math.abs(n) >= 1000 ? Math.round(Math.abs(n) / 1000) + "k" : Math.abs(n));
+const num = (n) => n.toLocaleString("en-US");
+const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const pick = (list) => list[Math.floor(Math.random() * list.length)];
+
+function addTeam(name, practice) {
+  state.teams.push({ id: "t" + Date.now() + Math.random().toString(36).slice(2, 6), name, practice: !!practice,
+    cash: S.startingCash, cumProduct: 0, brand: 0, totalCustomers: 0, totalRevenue: 0, score: 0, history: [] });
+}
+
+function defaultMove(t) {
+  if (!t.practice) return { tier: "mid", product: S.roundBudget / 2, marketing: S.roundBudget / 2, bold: "", boldScore: 0 };
+  const steps = S.roundBudget / S.budgetStep;
+  const p = Math.floor(Math.random() * (steps + 1));
+  const m = Math.floor(Math.random() * (steps - p + 1));
+  return { tier: pick(TIERS), product: p * S.budgetStep, marketing: m * S.budgetStep, bold: pick(S.practiceMoves), boldScore: 0 };
+}
+
+function startRound() {
+  state.round += 1;
+  state.phase = "moves";
+  state.moves = Object.fromEntries(state.teams.map((t) => [t.id, defaultMove(t)]));
+  save(); render();
+}
+
+function resolveRound() {
+  const unused = S.shocks.filter((x) => !state.shocksUsed.includes(x.headline));
+  const shock = pick(unused.length ? unused : S.shocks);
+  state.shocksUsed.push(shock.headline);
+  const plays = state.teams.map((t) => ({ id: t.id, cash: t.cash, cumProduct: t.cumProduct, brand: t.brand, ...state.moves[t.id] }));
+  const results = resolveMarket(S, plays, shock);
+  for (const t of state.teams) {
+    const r = results[t.id], mv = state.moves[t.id];
+    t.cash = r.cashEnd; t.cumProduct = r.cumProduct; t.brand = r.brand;
+    t.totalCustomers += r.customers; t.totalRevenue += r.revenue;
+    t.history.push({ round: state.round, ...mv, ...r, quote: pick(S.quotes[mv.tier]) });
+  }
+  scoreTeams(S, state.teams);
+  state.last = { shock };
+  state.phase = state.round >= S.rounds ? "final" : "results";
+  save(); render();
+}
+
+// ================================================================== THE SCREENS
+const app = document.getElementById("app");
+
+function render() {
+  document.getElementById("caseName").textContent = S.name;
+  document.getElementById("roundPill").textContent = state.phase === "setup" ? "Setup" : `Round ${state.round} of ${S.rounds}`;
+  if (state.phase === "setup") return setupScreen();
+  if (state.phase === "moves") return movesScreen();
+  return resultsScreen();
+}
+
+function tierCards() {
+  return `<div class="tiers">${TIERS.map((k) => `<div class="tier"><div class="muted">${esc(S.tiers[k].label)} price</div><b>$${S.tiers[k].price}</b><div class="muted">${esc(S.tiers[k].note)}</div></div>`).join("")}</div>`;
+}
+
+function setupScreen() {
+  app.innerHTML = `
+    <h1>${esc(S.name)}</h1>
+    <p class="lead">${esc(S.market)}</p>
+    ${tierCards()}
+    <p class="lead">Each team starts with ${money(S.startingCash)}. Each round, a team picks a price, splits ${money(S.roundBudget)} between product and marketing, and writes one bold move. The best mix of ${esc(S.units)}, revenue, and cash after ${S.rounds} rounds wins.</p>
+    <h2>Teams</h2>
+    <table><tbody>${state.teams.map((t) => `<tr><td>${esc(t.name)}${t.practice ? ' <span class="muted">(practice team)</span>' : ""}</td><td class="r"><button class="small" data-remove="${t.id}">Remove this team</button></td></tr>`).join("") || '<tr><td class="muted">No teams yet. Add the teams in the room, or add practice teams.</td></tr>'}</tbody></table>
+    <div class="row"><input type="text" id="newTeam" placeholder="Team name" style="max-width:360px"><button id="addBtn">Add the team</button><button id="practiceBtn">Add practice teams</button></div>
+    <div class="row"><button class="go" id="startBtn" ${state.teams.length ? "" : "disabled"}>Start round 1</button></div>`;
+  const input = document.getElementById("newTeam");
+  const add = () => { if (input.value.trim()) { addTeam(input.value.trim()); save(); render(); document.getElementById("newTeam").focus(); } };
+  document.getElementById("addBtn").onclick = add;
+  input.onkeydown = (e) => { if (e.key === "Enter") add(); };
+  document.getElementById("practiceBtn").onclick = () => {
+    const taken = new Set(state.teams.map((t) => t.name));
+    S.practiceNames.filter((n) => !taken.has(n)).forEach((n) => addTeam(n, true));
+    save(); render();
+  };
+  app.querySelectorAll("[data-remove]").forEach((b) => b.onclick = () => { state.teams = state.teams.filter((t) => t.id !== b.dataset.remove); save(); render(); });
+  document.getElementById("startBtn").onclick = startRound;
+}
+
+function budgetOptions(selected, max) {
+  const opts = [];
+  for (let v = 0; v <= max; v += S.budgetStep) opts.push(`<option value="${v}" ${v === selected ? "selected" : ""}>${money(v)}</option>`);
+  return opts.join("");
+}
+
+function movesScreen() {
+  app.innerHTML = `
+    <h1>Round ${state.round}: make your moves</h1>
+    ${tierCards()}
+    <table>
+      <thead><tr><th>Team</th><th>Price</th><th>Product</th><th>Marketing</th><th class="r">Kept as cash</th><th>Bold move</th><th>Instructor's score</th></tr></thead>
+      <tbody>${state.teams.map((t) => {
+        const mv = state.moves[t.id];
+        return `<tr data-team="${t.id}">
+          <td><b>${esc(t.name)}</b><div class="muted">${money(t.cash)} in cash</div></td>
+          <td><div class="seg">${TIERS.map((k) => `<button class="small ${mv.tier === k ? "on" : ""}" data-tier="${k}">${esc(S.tiers[k].label)}</button>`).join("")}</div></td>
+          <td><select data-k="product">${budgetOptions(mv.product, S.roundBudget)}</select></td>
+          <td><select data-k="marketing">${budgetOptions(mv.marketing, S.roundBudget - mv.product)}</select></td>
+          <td class="r">${money(S.roundBudget - mv.product - mv.marketing)}</td>
+          <td><input type="text" data-k="bold" value="${esc(mv.bold)}" placeholder="One bold move"></td>
+          <td><div class="seg">${BOLD.map((b) => `<button class="small ${mv.boldScore === b.value ? "on" : ""}" data-bold="${b.value}">${b.label}</button>`).join("")}</div></td>
+        </tr>`;
+      }).join("")}</tbody>
+    </table>
+    <div class="row"><button class="go" id="resolveBtn">Resolve round ${state.round}</button>
+      <span class="muted">Score each bold move by how well it fits this market. A poor fit costs 10 percent of customers, and a great fit adds 20 percent.</span></div>`;
+  app.querySelectorAll("tr[data-team]").forEach((row) => {
+    const mv = state.moves[row.dataset.team];
+    row.querySelectorAll("[data-tier]").forEach((b) => b.onclick = () => { mv.tier = b.dataset.tier; save(); render(); });
+    row.querySelectorAll("[data-bold]").forEach((b) => b.onclick = () => { mv.boldScore = Number(b.dataset.bold); save(); render(); });
+    row.querySelector('[data-k="product"]').onchange = (e) => { mv.product = Number(e.target.value); mv.marketing = Math.min(mv.marketing, S.roundBudget - mv.product); save(); render(); };
+    row.querySelector('[data-k="marketing"]').onchange = (e) => { mv.marketing = Number(e.target.value); save(); render(); };
+    row.querySelector('[data-k="bold"]').oninput = (e) => { mv.bold = e.target.value; save(); };
+  });
+  document.getElementById("resolveBtn").onclick = resolveRound;
+}
+
+function verdict(v) {
+  const b = BOLD.find((x) => x.value === v) || BOLD[1];
+  const cls = v > 0 ? "pos" : v < 0 ? "neg" : "zero";
+  return `<span class="verdict ${cls}">${b.label}, ${v > 0 ? "+" : ""}${Math.round(v * 100)}% ${esc(S.units)}</span>`;
+}
+
+function resultsScreen() {
+  const final = state.phase === "final";
+  const shock = state.last.shock;
+  const ranked = [...state.teams].sort((a, b) => b.score - a.score);
+  const top = ranked[0];
+  const best = Math.max(1, ...ranked.map((t) => t.score));
+  app.innerHTML = `
+    ${final ? `<div class="muted">After ${S.rounds} rounds, the winner is</div><div class="winner">${esc(top.name)}</div>` : `<h1>Round ${state.round} results</h1>`}
+    <div class="news"><span class="muted" style="color:#5a4a10;font-weight:700">NEWS</span><b>${esc(shock.headline)}</b>${esc(shock.detail)}</div>
+    <table>
+      <thead><tr><th>Rank</th><th>Startup</th><th>Price</th><th class="r">${esc(S.units)} this round</th><th class="r">Profit this round</th><th class="r">Cash</th><th>Score</th><th>Bold move</th></tr></thead>
+      <tbody>${ranked.map((t, i) => {
+        const h = t.history[t.history.length - 1];
+        return `<tr><td><b>${i + 1}</b></td><td><b>${esc(t.name)}</b></td><td>${esc(S.tiers[h.tier].label)}</td>
+          <td class="r">${num(h.customers)}</td><td class="r ${h.profit < 0 ? "cash neg" : ""}">${money(h.profit)}</td>
+          <td class="r ${t.cash < 0 ? "cash neg" : ""}">${money(t.cash)}</td>
+          <td><span class="bar" style="width:${Math.round(80 * t.score / best)}px"></span>${t.score}</td>
+          <td>${h.bold ? esc(h.bold) + "<br>" : ""}${verdict(h.boldScore)}</td></tr>`;
+      }).join("")}</tbody>
+    </table>
+    <h2>Voices from the market</h2>
+    <div class="quotes">${ranked.slice(0, 3).map((t) => `<div class="quote">"${esc(t.history[t.history.length - 1].quote)}"<small>A customer of ${esc(t.name)}</small></div>`).join("")}</div>
+    <div class="row">
+      ${final ? '<button class="go" id="newBtn">Start a new game</button>' : `<button class="go" id="nextBtn">Start round ${state.round + 1}</button>`}
+      ${final ? "" : '<button id="newBtn">Start a new game</button>'}
+    </div>`;
+  if (!final) document.getElementById("nextBtn").onclick = startRound;
+  document.getElementById("newBtn").onclick = () => {
+    if (!confirm("Start a new game? This clears the teams and the scores.")) return;
+    state = fresh(); save(); render();
+  };
+}
+
+render();
+</script>
+</body>
+</html>
