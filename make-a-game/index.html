@@ -92,6 +92,9 @@ button.go { background: var(--gold); color: #1a1a1a; font-size: 22px; padding: 1
 button.on { background: var(--gold); color: #1a1a1a; }
 button.small { padding: 4px 10px; font-size: 15px; }
 button:disabled { opacity: .4; cursor: default; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.scroll { overflow-x: auto; }
+.confirm { display: inline-flex; gap: 10px; align-items: center; }
 input, select { font: inherit; background: #0e2a20; color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
 input[type=text] { width: 100%; }
 .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 14px 0; }
@@ -276,7 +279,7 @@ function movesScreen() {
   app.innerHTML = `
     <h1>Round ${state.round}: make your moves</h1>
     ${tierCards()}
-    <table>
+    <div class="scroll"><table>
       <thead><tr><th>Team</th><th>Price</th><th>Product</th><th>Marketing</th><th class="r">Kept as cash</th><th>Bold move</th><th>Instructor's score</th></tr></thead>
       <tbody>${state.teams.map((t) => {
         const mv = state.moves[t.id];
@@ -290,7 +293,7 @@ function movesScreen() {
           <td><div class="seg">${BOLD.map((b) => `<button class="small ${mv.boldScore === b.value ? "on" : ""}" data-bold="${b.value}">${b.label}</button>`).join("")}</div></td>
         </tr>`;
       }).join("")}</tbody>
-    </table>
+    </table></div>
     <div class="row"><button class="go" id="resolveBtn">Resolve round ${state.round}</button>
       <span class="muted">Score each bold move by how well it fits this market. A poor fit costs 10 percent of customers, and a great fit adds 20 percent.</span></div>`;
   app.querySelectorAll("tr[data-team]").forEach((row) => {
@@ -319,7 +322,7 @@ function resultsScreen() {
   app.innerHTML = `
     ${final ? `<div class="muted">After ${S.rounds} rounds, the winner is</div><div class="winner">${esc(top.name)}</div>` : `<h1>Round ${state.round} results</h1>`}
     <div class="news"><span class="muted" style="color:#5a4a10;font-weight:700">NEWS</span><b>${esc(shock.headline)}</b>${esc(shock.detail)}</div>
-    <table>
+    <div class="scroll"><table>
       <thead><tr><th>Rank</th><th>Startup</th><th>Price</th><th class="r">${esc(S.units)} this round</th><th class="r">Profit this round</th><th class="r">Cash</th><th>Score</th><th>Bold move</th></tr></thead>
       <tbody>${ranked.map((t, i) => {
         const h = t.history[t.history.length - 1];
@@ -329,7 +332,7 @@ function resultsScreen() {
           <td><span class="bar" style="width:${Math.round(80 * t.score / best)}px"></span>${t.score}</td>
           <td>${h.bold ? esc(h.bold) + "<br>" : ""}${verdict(h.boldScore)}</td></tr>`;
       }).join("")}</tbody>
-    </table>
+    </table></div>
     <h2>Voices from the market</h2>
     <div class="quotes">${ranked.slice(0, 3).map((t) => `<div class="quote">"${esc(t.history[t.history.length - 1].quote)}"<small>A customer of ${esc(t.name)}</small></div>`).join("")}</div>
     <div class="row">
@@ -337,9 +340,14 @@ function resultsScreen() {
       ${final ? "" : '<button id="newBtn">Start a new game</button>'}
     </div>`;
   if (!final) document.getElementById("nextBtn").onclick = startRound;
-  document.getElementById("newBtn").onclick = () => {
-    if (!confirm("Start a new game? This clears the teams and the scores.")) return;
-    state = fresh(); save(); render();
+  // Ask on the page itself. Pop-up dialogs do not work inside a Claude artifact.
+  document.getElementById("newBtn").onclick = (e) => {
+    const box = document.createElement("span");
+    box.className = "confirm";
+    box.innerHTML = '<span>This clears the teams and the scores.</span><button id="clearBtn">Clear and start over</button><button id="keepBtn">Keep this game</button>';
+    e.target.replaceWith(box);
+    document.getElementById("clearBtn").onclick = () => { state = fresh(); save(); render(); };
+    document.getElementById("keepBtn").onclick = () => render();
   };
 }
 
