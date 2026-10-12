@@ -1,4 +1,4 @@
-# Launch Day (one-screen edition)
+# Launch It! (one-screen edition)
 
 This folder holds a classroom market game for an instructor at the AIEE Build 1 workshop. The instructor uses Claude Code to rewrite the game around a case they teach.
 

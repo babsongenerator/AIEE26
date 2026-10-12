@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Launch Day</title>
+<title>Launch It!</title>
 <!--
-  This is Launch Day, the one-screen edition. Open this file by double-clicking it. It needs no
+  This is Launch It!, the one-screen edition. Open this file by double-clicking it. It needs no
   server, no install, and no internet.
 
   The case lives in the SCENARIO block just below. To make the game about a case you
@@ -81,6 +81,7 @@ body { margin: 0; background: var(--bg); color: var(--ink); font: 18px/1.45 Aria
 header { display: flex; align-items: center; gap: 16px; padding: 18px 28px; border-bottom: 1px solid var(--line); }
 header .brand { font-weight: 800; letter-spacing: .14em; font-size: 20px; }
 header .brand b { color: var(--gold); }
+header .brand small { font-size: 12px; color: var(--soft); letter-spacing: .12em; margin-left: 6px; }
 header .case { color: var(--soft); }
 header .pill { margin-left: auto; background: var(--gold); color: #1a1a1a; font-weight: 700; border-radius: 999px; padding: 4px 14px; }
 main { padding: 24px 28px 60px; max-width: 1400px; margin: 0 auto; }
@@ -120,11 +121,11 @@ td.r, th.r { text-align: right; }
 </style>
 </head>
 <body>
-<header><div class="brand">LAUNCH <b>DAY</b></div><div class="case" id="caseName"></div><div class="pill" id="roundPill"></div></header>
+<header><div class="brand">LAUNCH <b>IT!</b> <small>THE GAME</small></div><div class="case" id="caseName"></div><div class="pill" id="roundPill"></div></header>
 <main id="app"></main>
 <script>
 // ============================================================ THE MARKET MODEL
-// The same math as the full Launch Day game. Quality grows with product spending,
+// The same math as the full Launch It! game. Quality grows with product spending,
 // awareness with marketing, and each customer group splits its demand by how much it
 // likes each price. The bold-move score and the news event adjust the result.
 const TIERS = ["low", "mid", "premium"];
@@ -179,7 +180,7 @@ const BOLD = [
   { value: 0.1, label: "Good fit" },
   { value: 0.2, label: "Great fit" },
 ];
-const KEY = "launchday-" + SCENARIO.name;
+const KEY = "launchit-" + SCENARIO.name;
 const S = SCENARIO;
 let state = load() || fresh();
 

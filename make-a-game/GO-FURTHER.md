@@ -1,6 +1,6 @@
-# Go further: the full Launch Day
+# Go further: the full Launch It!
 
-The one-screen game runs on the instructor's laptop. The full Launch Day, the one in the session demo, adds two things:
+The one-screen game runs on the instructor's laptop. The full Launch It!, the one in the session demo, adds two things:
 
 - Players join from their own phones by scanning a QR code on the projector.
 - Claude reads every bold move during the round and judges how customers respond, so nobody scores the moves by hand.

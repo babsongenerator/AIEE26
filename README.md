@@ -6,7 +6,7 @@ You pick one of three tracks and build a working tool for a class you teach. Eac
 
 | Track | Folder | What you build | Where you work |
 |---|---|---|---|
-| Make a Game | `make-a-game` | Launch Day, a startup market game, rewritten around a case you teach | Claude Code |
+| Make a Game | `make-a-game` | Launch It!, a startup market game, rewritten around a case you teach | Claude Code |
 | Make a Class Tool | `make-a-class-tool` | A name-practice page for an invented class, then a tool of your own | Claude Code |
 | Make a Prototype | `make-a-prototype` | A physical object you design with AI and 3D print at the Weissman Foundry | Claude |
 
@@ -21,7 +21,7 @@ Nothing needs to be installed. Every starter is a set of plain web pages that op
 
 ### Make a Game
 
-> I teach [course] to [who your students are]. Download https://github.com/babsongenerator/AIEE26/archive/refs/heads/main.zip, unzip it in this folder, and keep only the make-a-game folder. Then read make-a-game/CLAUDE.md. I want Launch Day to run on a case from my class: [the company, its market, and its rivals]. Ask me up to three short questions about the case, one at a time. Then propose a plan in five steps or fewer. Do not change anything until I say go.
+> I teach [course] to [who your students are]. Download https://github.com/babsongenerator/AIEE26/archive/refs/heads/main.zip, unzip it in this folder, and keep only the make-a-game folder. Then read make-a-game/CLAUDE.md. I want Launch It! to run on a case from my class: [the company, its market, and its rivals]. Ask me up to three short questions about the case, one at a time. Then propose a plan in five steps or fewer. Do not change anything until I say go.
 
 ### Make a Class Tool
 
@@ -47,5 +47,5 @@ Use the invented class and made-up student work only. The 20 students in `make-a
 
 ## After the session
 
-- `make-a-game/GO-FURTHER.md` shows how to run the full Launch Day, where players join from their phones and Claude judges each bold move.
+- `make-a-game/GO-FURTHER.md` shows how to run the full Launch It!, where players join from their phones and Claude judges each bold move.
 - Everything here stays available after the workshop, so you can come back and keep building.
