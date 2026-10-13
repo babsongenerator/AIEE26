@@ -6,7 +6,7 @@ This track works in a regular Claude chat, on the web at claude.ai or in the Cla
 
 ## 1. Get the guide
 
-Jonathan Griffiths wrote a guide for this track: From an idea to a printed part, with Claude. It walks through three tools with a worked example for each. During the workshop, download it from aiee.jsims.dev/prototype.
+Jonathan Griffiths wrote a guide for this track: From an idea to a printed part, with Claude. It walks through three tools with a worked example for each. During the workshop, download it from aiee.thegenerator.dev/prototype.
 
 ## 2. Describe the use
 
@@ -34,7 +34,7 @@ Print a thin slice or a half-size version first. These prompts help:
 
 ## 5. Print at the Foundry
 
-During AIEE, upload your STL files to the AIEE F26 3D Prints folder. The link is in the guide and on aiee.jsims.dev/prototype. Put your name in each file name, for example griffiths-phone-stand-test.stl. Pick up your prints at the Weissman Foundry on Saturday or Sunday, October 17 or 18, from 12 to 8 pm. Ask a Scout, one of the Foundry's student staff.
+During AIEE, upload your STL files to the AIEE F26 3D Prints folder. The link is in the guide and on aiee.thegenerator.dev/prototype. Put your name in each file name, for example griffiths-phone-stand-test.stl. Pick up your prints at the Weissman Foundry on Saturday or Sunday, October 17 or 18, from 12 to 8 pm. Ask a Scout, one of the Foundry's student staff.
 
 ## After today
 
