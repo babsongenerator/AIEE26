@@ -20,6 +20,14 @@ The 20 students are invented, and their portraits were made with AI. None of the
 - Keep each change small. Make the one change the instructor asked for, then stop.
 - Save anything a tool needs to remember (such as missed names) in the browser's `localStorage`, under a key that starts with `classtools-`.
 
+## Keep it fast
+
+The workshop build has about 12 minutes, and the instructor is watching.
+
+- Don't write or run scripts outside the page itself, and don't install anything. The instructor's laptop may not have Node or Python.
+- Don't search the web unless the instructor asks.
+- Make each change in as few edits as you can, then tell the instructor to refresh the page.
+
 ## How to work with the instructor
 
 - When the instructor asks for a plan, ask your questions one at a time, then propose a plan in five steps or fewer. Do not write any code until they say go.

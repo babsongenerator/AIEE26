@@ -22,6 +22,14 @@ Each round, each team picks one of three prices, splits a budget between product
 - Keep each change small. Make the one change the instructor asked for, then stop.
 - Never add real student names or grades.
 
+## Keep it fast
+
+The workshop build has about 12 minutes, and the instructor is watching.
+
+- Check the balance by working through the market model above: the margin on each price, and which price each customer group prefers. Don't write or run scripts, and don't install anything. The instructor's laptop may not have Node or Python.
+- Don't search the web unless the instructor asks for real news. If they do, run one or two searches and use what you find.
+- Write the new `SCENARIO` block in one edit, then tell the instructor to refresh the page.
+
 ## How to work with the instructor
 
 - When the instructor asks for a plan, ask your questions one at a time, then propose a plan in five steps or fewer. Do not change any file until they say go.
