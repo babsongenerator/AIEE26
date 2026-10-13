@@ -27,6 +27,7 @@ The workshop build has about 12 minutes, and the instructor is watching.
 - Don't write or run scripts outside the page itself, and don't install anything. The instructor's laptop may not have Node or Python.
 - Don't search the web unless the instructor asks.
 - Make each change in as few edits as you can, then tell the instructor to refresh the page.
+- Show the page you made or changed in the instructor's web browser: run `open <file>` on a Mac or `start <file>` on Windows. The Claude app's side panel can't run the page's scripts, so the page looks blank there.
 
 ## How to work with the instructor
 

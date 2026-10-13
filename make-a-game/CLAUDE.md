@@ -29,6 +29,7 @@ The workshop build has about 12 minutes, and the instructor is watching.
 - Check the balance by working through the market model above: the margin on each price, and which price each customer group prefers. Don't write or run scripts, and don't install anything. The instructor's laptop may not have Node or Python.
 - Don't search the web unless the instructor asks for real news. If they do, run one or two searches and use what you find.
 - Write the new `SCENARIO` block in one edit, then tell the instructor to refresh the page.
+- Show the page in the instructor's web browser: run `open index.html` on a Mac or `start index.html` on Windows. The Claude app's side panel can't run the page's scripts, so the page looks blank there.
 
 ## How to work with the instructor
 
